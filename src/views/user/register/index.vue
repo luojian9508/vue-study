@@ -13,7 +13,12 @@
         <el-form-item label="确认密码" prop="passwordConfirm">
           <el-input placeholder="请输入密码" v-model="formData.passwordConfirm" show-password></el-input>
         </el-form-item>
-        <el-button type="primary" @click="register('formData')">注册</el-button>
+
+        <el-button type="primary" @click="submit('formData')" class="registerButton">注册</el-button>
+        <div class="loginLink">
+          <router-link :to="{name: 'UserLogin'}">返回登录页面</router-link>
+        </div>
+
       </el-form>
     </div>
 
@@ -21,6 +26,7 @@
 </template>
 
 <script>
+import {register} from '@/api/user/user'
 export default {
   name: 'index',
   data () {
@@ -33,7 +39,7 @@ export default {
       formRules: {
         username: [
           {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 3, max: 10, message: '长度在 3 到 10 个字符之间', trigger: 'blur'}
+          {min: 2, max: 10, message: '长度在 2 到 10 个字符之间', trigger: 'blur'}
         ],
         password: [
           {required: true, message: '请输入密码', trigger: 'blur'},
@@ -57,12 +63,26 @@ export default {
     }
   },
   methods: {
-    register (formName) {
+    submit (formName) {
       this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
+        if (!valid) {
+          return
+        }
+        if (this.GLOBAL.UseBackend) {
+          register({
+            username: this.formData.username,
+            password: this.formData.password
+          }).then(response => {
+            if (response.success) {
+              sessionStorage.setItem('username', this.formData.username)
+              this.$router.push('/index')
+            }
+          }).catch(error => {
+            console.log('catch:', error)
+          })
         } else {
-          return false
+          sessionStorage.setItem('username', this.formData.username)
+          this.$router.push('/index')
         }
       })
     }
@@ -89,4 +109,13 @@ export default {
     width: 50%;
     margin: 0 auto;
   }
+
+  .registerButton {
+    width: 40%;
+  }
+
+  .loginLink {
+    margin-top: 20px;
+  }
+
 </style>

@@ -10,8 +10,11 @@
         <el-form-item label="密码" prop="password">
           <el-input placeholder="请输入密码" v-model="formData.password" show-password></el-input>
         </el-form-item>
-        <el-button type="primary" @click="login('formData')">登录</el-button>
-        <el-button @click="goRegisterPage()">注册</el-button>
+        <el-button type="primary" @click="submit('formData')" class="loginButton">登录</el-button>
+        <div class="registerLink">
+          没有账号？
+          <router-link :to="{name: 'UserRegister'}">立即注册！</router-link>
+        </div>
       </el-form>
     </div>
 
@@ -19,6 +22,7 @@
 </template>
 
 <script>
+import {login} from '@/api/user/user'
 export default {
   name: 'index',
   data () {
@@ -30,7 +34,7 @@ export default {
       formRules: {
         username: [
           {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 3, max: 10, message: '长度在 3 到 10 个字符之间', trigger: 'blur'}
+          {min: 2, max: 10, message: '长度在 2 到 10 个字符之间', trigger: 'blur'}
         ],
         password: [
           {required: true, message: '请输入密码', trigger: 'blur'},
@@ -40,17 +44,38 @@ export default {
     }
   },
   methods: {
-    login (formName) {
+    submit (formName) {
       this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
+        if (!valid) {
+          return
+        }
+        // return new Promise((resolve, reject) => {
+        //   login(this.formData).then(response => {
+        //     console.log('response:', response)
+        //     if (response.success) {
+        //       sessionStorage.setItem('username', this.formData.username)
+        //       this.$router.push('/index')
+        //       resolve()
+        //     }
+        //   }).catch(error => {
+        //     reject(error)
+        //     console.log('catch:', error)
+        //   })
+        // })
+        if (this.GLOBAL.UseBackend) {
+          login(this.formData).then(response => {
+            if (response.success) {
+              sessionStorage.setItem('username', this.formData.username)
+              this.$router.push('/index')
+            }
+          }).catch(error => {
+            console.log('catch:', error)
+          })
         } else {
-          return false
+          sessionStorage.setItem('username', this.formData.username)
+          this.$router.push('/index')
         }
       })
-    },
-    goRegisterPage () {
-      this.$router.push('/user/register')
     }
   }
 
@@ -76,4 +101,13 @@ export default {
     width: 50%;
     margin: 0 auto;
   }
+
+  .loginButton {
+    width: 50%;
+  }
+
+  .registerLink {
+    margin-top: 20px;
+  }
+
 </style>
