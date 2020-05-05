@@ -5,7 +5,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
-import globalConstants from '@/common/js/global-constants'
+import globalConstants from '@/global-constants'
 
 Vue.config.productionTip = false
 Vue.prototype.GLOBAL = globalConstants

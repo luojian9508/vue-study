@@ -16,7 +16,7 @@
 
         <el-button type="primary" @click="submit('formData')" class="registerButton">注册</el-button>
         <div class="loginLink">
-          <router-link :to="{name: 'UserLogin'}">返回登录页面</router-link>
+          <router-link :to="{name: 'Login'}">返回登录页面</router-link>
         </div>
 
       </el-form>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {register} from '@/api/user/user'
+import {register} from '@/api/auth'
 export default {
   name: 'index',
   data () {
@@ -68,22 +68,17 @@ export default {
         if (!valid) {
           return
         }
-        if (this.GLOBAL.UseBackend) {
-          register({
-            username: this.formData.username,
-            password: this.formData.password
-          }).then(response => {
-            if (response.success) {
-              sessionStorage.setItem('username', this.formData.username)
-              this.$router.push('/index')
-            }
-          }).catch(error => {
-            console.log('catch:', error)
-          })
-        } else {
-          sessionStorage.setItem('username', this.formData.username)
-          this.$router.push('/index')
-        }
+        register({
+          username: this.formData.username,
+          password: this.formData.password
+        }).then(response => {
+          if (response.success) {
+            sessionStorage.setItem('username', response.data.username)
+            this.$router.push({name: 'Home'})
+          }
+        }).catch(error => {
+          console.log(error)
+        })
       })
     }
   }

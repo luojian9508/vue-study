@@ -13,7 +13,7 @@
         <el-button type="primary" @click="submit('formData')" class="loginButton">登录</el-button>
         <div class="registerLink">
           没有账号？
-          <router-link :to="{name: 'UserRegister'}">立即注册！</router-link>
+          <router-link :to="{name: 'Register'}">立即注册！</router-link>
         </div>
       </el-form>
     </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {login} from '@/api/user/user'
+import {login} from '@/api/auth'
 export default {
   name: 'index',
   data () {
@@ -49,32 +49,14 @@ export default {
         if (!valid) {
           return
         }
-        // return new Promise((resolve, reject) => {
-        //   login(this.formData).then(response => {
-        //     console.log('response:', response)
-        //     if (response.success) {
-        //       sessionStorage.setItem('username', this.formData.username)
-        //       this.$router.push('/index')
-        //       resolve()
-        //     }
-        //   }).catch(error => {
-        //     reject(error)
-        //     console.log('catch:', error)
-        //   })
-        // })
-        if (this.GLOBAL.UseBackend) {
-          login(this.formData).then(response => {
-            if (response.success) {
-              sessionStorage.setItem('username', this.formData.username)
-              this.$router.push('/index')
-            }
-          }).catch(error => {
-            console.log('catch:', error)
-          })
-        } else {
-          sessionStorage.setItem('username', this.formData.username)
-          this.$router.push('/index')
-        }
+        login(this.formData).then(response => {
+          if (response.success) {
+            sessionStorage.setItem('username', response.data.username)
+            this.$router.push({name: 'Home'})
+          }
+        }).catch(error => {
+          console.log(error)
+        })
       })
     }
   }
